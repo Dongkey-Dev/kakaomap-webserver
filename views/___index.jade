@@ -1,0 +1,58 @@
+html
+    body
+        template
+            div(ref='map', style='width:100vw;height:100vh;')
+        script.
+            export default {
+            head() {
+            return {
+            script: [
+            {
+            src: `//dapi.kakao.com/v2/maps/sdk.js?appkey=034f353d5d77b5b81179ee7210aa75bc&libraries=clusterer`,
+            },
+            ],
+            };
+            },
+            data() {
+            return {
+            map: null,
+            };
+            },
+            mounted() {
+            this.$nextTick(() => {
+            this.load();
+            window.__WEBVIEW_BRIDGE__.send(
+            "getGeolocationPosition",
+            {},
+            this.getGeolocationPosition
+            );
+            });
+            },
+            methods: {
+            getGeolocationPosition({ lat, lng }) {
+            this.setCenter(lat, lng);
+            this.setMarker(lat, lng);
+            },
+            setCenter(lat, lng) {
+            // 지도 중심을 이동 시킵니다
+            this.map.setCenter(new kakao.maps.LatLng(lat, lng));
+            },
+            setMarker(lat, lng) {
+            // 마커를 생성합니다
+            const marker = new kakao.maps.Marker({
+            position: new kakao.maps.LatLng(lat, lng),
+            });
+            // 마커가 지도 위에 표시되도록 설정합니다
+            marker.setMap(this.map);
+            },
+            load() {
+            const container = this.$refs["map"];
+            const options = {
+            center: new kakao.maps.LatLng(36.176134, 127.986741),
+            level: 3,
+            };
+            this.map = new kakao.maps.Map(container, options);
+            // console.log(new kakao.maps.Map)
+            },
+            },
+            };
